@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://bwe2slgby1j1x"]
+
+[ext_resource type="Script" path="res://scenes/cursor.cs" id="1_fw5w2"]
+
+[node name="CanvasLayer" type="CanvasLayer"]
+script = ExtResource("1_fw5w2")
+
+[node name="Label" type="Label" parent="."]
+offset_left = 275.0
+offset_top = 136.0
+offset_right = 377.0
+offset_bottom = 201.0
+text = "o"
+horizontal_alignment = 1
+vertical_alignment = 1

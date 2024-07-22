@@ -1,0 +1,22 @@
+[gd_scene load_steps=5 format=3 uid="uid://8qe5iitfohqp"]
+
+[ext_resource type="Script" path="res://scenes/atom.cs" id="1_fkh7j"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_cska1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4ade0"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_a0rd3"]
+
+[node name="Atom" type="Node3D"]
+script = ExtResource("1_fkh7j")
+
+[node name="AtomStaticBody" type="StaticBody3D" parent="."]
+
+[node name="AtomMesh" type="MeshInstance3D" parent="AtomStaticBody"]
+mesh = SubResource("SphereMesh_cska1")
+skeleton = NodePath("../..")
+surface_material_override/0 = SubResource("StandardMaterial3D_4ade0")
+
+[node name="AtomCollision" type="CollisionShape3D" parent="AtomStaticBody"]
+shape = SubResource("SphereShape3D_a0rd3")

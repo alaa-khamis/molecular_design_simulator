@@ -1,0 +1,168 @@
+[gd_scene load_steps=23 format=3 uid="uid://dwopei0e0w3ib"]
+
+[ext_resource type="Texture2D" uid="uid://dl01s686m1gee" path="res://assets/textures/floor/laminate_floor_02_diff_4k.png" id="1_ft4rg"]
+[ext_resource type="Texture2D" uid="uid://caljqv2mm6lbr" path="res://assets/textures/floor/laminate_floor_02_nor_gl_4k.png" id="2_8kavq"]
+[ext_resource type="Texture2D" uid="uid://bn0x7r84rvbgs" path="res://assets/textures/floor/laminate_floor_02_rough_4k.png" id="3_sxo6n"]
+[ext_resource type="Texture2D" uid="uid://dycfrfcucqyhc" path="res://assets/textures/wall/painted_plaster_wall_diff_4k.png" id="4_y7fte"]
+[ext_resource type="Texture2D" uid="uid://dbdugivyehn3l" path="res://assets/textures/wall/painted_plaster_wall_nor_gl_4k.png" id="5_t3pua"]
+[ext_resource type="Texture2D" uid="uid://u7noguotfw35" path="res://assets/textures/wall/painted_plaster_wall_rough_4k.png" id="6_thxef"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_5jtd2"]
+size = Vector3(40, 2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3t2cv"]
+size = Vector3(40, 2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1cbwh"]
+diffuse_mode = 1
+albedo_texture = ExtResource("1_ft4rg")
+metallic_specular = 0.17
+roughness_texture = ExtResource("3_sxo6n")
+normal_enabled = true
+normal_texture = ExtResource("2_8kavq")
+uv1_scale = Vector3(15, 15, 15)
+uv1_offset = Vector3(2, 1, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_20ymu"]
+size = Vector3(20, 2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_8usb5"]
+size = Vector3(20, 2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v4v8g"]
+albedo_texture = ExtResource("4_y7fte")
+roughness_texture = ExtResource("6_thxef")
+normal_enabled = true
+normal_texture = ExtResource("5_t3pua")
+uv1_scale = Vector3(3, 3, 3)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rvjkh"]
+size = Vector3(20, 2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_1bxmr"]
+size = Vector3(20, 2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vyixj"]
+albedo_texture = ExtResource("4_y7fte")
+roughness_texture = ExtResource("6_thxef")
+normal_enabled = true
+normal_texture = ExtResource("5_t3pua")
+uv1_scale = Vector3(3, 3, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mc30q"]
+albedo_texture = ExtResource("4_y7fte")
+roughness_texture = ExtResource("6_thxef")
+normal_enabled = true
+normal_texture = ExtResource("5_t3pua")
+uv1_scale = Vector3(4, 4, 4)
+uv1_triplanar_sharpness = 8.28212
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qm1wp"]
+albedo_texture = ExtResource("4_y7fte")
+roughness_texture = ExtResource("6_thxef")
+normal_enabled = true
+normal_texture = ExtResource("5_t3pua")
+uv1_scale = Vector3(2, 2, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ltwq5"]
+size = Vector3(40, 2, 40)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a47ea"]
+size = Vector3(40, 2, 40)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_igcpk"]
+albedo_color = Color(0.129412, 0.14902, 0.180392, 1)
+roughness = 0.0
+
+[sub_resource type="SphereMesh" id="SphereMesh_05uif"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u8eak"]
+emission_enabled = true
+emission = Color(1, 0.815686, 0.458824, 1)
+emission_energy_multiplier = 16.0
+rim_tint = 0.63
+grow = true
+grow_amount = 0.1
+
+[node name="LabRoom" type="Node3D"]
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_5jtd2")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_3t2cv")
+surface_material_override/0 = SubResource("StandardMaterial3D_1cbwh")
+
+[node name="Wall1" type="StaticBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 20, 10, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall1"]
+shape = SubResource("BoxShape3D_20ymu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall1"]
+mesh = SubResource("BoxMesh_8usb5")
+surface_material_override/0 = SubResource("StandardMaterial3D_v4v8g")
+
+[node name="Wall2" type="StaticBody3D" parent="."]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -20, 10, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall2"]
+shape = SubResource("BoxShape3D_rvjkh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2"]
+mesh = SubResource("BoxMesh_1bxmr")
+surface_material_override/0 = SubResource("StandardMaterial3D_vyixj")
+
+[node name="Wall3" type="StaticBody3D" parent="."]
+transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 10, 20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall3"]
+shape = SubResource("BoxShape3D_rvjkh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall3"]
+mesh = SubResource("BoxMesh_1bxmr")
+surface_material_override/0 = SubResource("StandardMaterial3D_mc30q")
+
+[node name="Wall4" type="StaticBody3D" parent="."]
+transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 10, -20)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Wall4"]
+shape = SubResource("BoxShape3D_rvjkh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Wall4"]
+mesh = SubResource("BoxMesh_1bxmr")
+surface_material_override/0 = SubResource("StandardMaterial3D_qm1wp")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("BoxShape3D_ltwq5")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("BoxMesh_a47ea")
+surface_material_override/0 = SubResource("StandardMaterial3D_igcpk")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.8817, 0)
+light_energy = 8.4
+light_specular = 3.845
+shadow_enabled = true
+omni_range = 33.83
+omni_attenuation = 1.86607
+
+[node name="CeilLight" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 16.8817, 0)
+mesh = SubResource("SphereMesh_05uif")
+surface_material_override/0 = SubResource("StandardMaterial3D_u8eak")
+
+[node name="SpotLight3D" type="SpotLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 16.8817, 0)
+light_energy = 15.982
+spot_range = 30.699
+spot_attenuation = 1.68179
+spot_angle = 53.18
+spot_angle_attenuation = 1.18921

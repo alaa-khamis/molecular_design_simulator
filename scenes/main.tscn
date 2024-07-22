@@ -1,0 +1,40 @@
+[gd_scene load_steps=8 format=3 uid="uid://cduw4ls6uqsmo"]
+
+[ext_resource type="Script" path="res://scenes/main.cs" id="1_6b63c"]
+[ext_resource type="PackedScene" uid="uid://dwopei0e0w3ib" path="res://scenes/lab_room.tscn" id="1_ytqs7"]
+[ext_resource type="PackedScene" uid="uid://nya5o4yahame" path="res://scenes/player.tscn" id="2_ry534"]
+[ext_resource type="PackedScene" uid="uid://bwe2slgby1j1x" path="res://scenes/cursor.tscn" id="4_bse55"]
+[ext_resource type="Script" path="res://scenes/ErrorLabel.cs" id="5_tfq5n"]
+[ext_resource type="PackedScene" uid="uid://bhvs2sqpagpo3" path="res://scenes/hud.tscn" id="6_3wx3h"]
+[ext_resource type="PackedScene" uid="uid://b06ngn5ocwjpd" path="res://scenes/periodic_table_ui.tscn" id="7_buh27"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_6b63c")
+
+[node name="LabRoom" parent="." instance=ExtResource("1_ytqs7")]
+
+[node name="Player" parent="." instance=ExtResource("2_ry534")]
+
+[node name="Cursor" parent="." instance=ExtResource("4_bse55")]
+
+[node name="ErrorLabel" type="Label" parent="."]
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -188.0
+offset_top = -70.0
+offset_right = 192.0
+offset_bottom = -13.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "Error, Molecule already placed in scene!"
+horizontal_alignment = 1
+vertical_alignment = 1
+script = ExtResource("5_tfq5n")
+
+[node name="HUD" parent="." instance=ExtResource("6_3wx3h")]
+
+[node name="PeriodicTableUI" parent="." instance=ExtResource("7_buh27")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10.1159, 4.47061, 0)
