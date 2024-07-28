@@ -3,28 +3,27 @@ using Godot.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using System;
-using GodotAtom = AtomClass.GodotAtom;
+using Atom = AtomClass.atom;
 using Bond = BondClass.bond;
 using PTControl = periodic_table_ui_control;
 using HUD = hud;
 using System.IO;
-using Classes;
 
 public partial class main : Node
 {
 
 	// Elements
-	private List<GodotAtom> elements;
+	private List<Atom> elements;
 	private PTControl ptControl;
 	private Control currentButton = null;
 
 
 	// Atoms & Bonds
-	private List<GodotAtom> atomList = new List<GodotAtom>();
-	private GodotAtom currentElement = null;
-	private GodotAtom currentAtom = null;
+	private List<Atom> atomList = new List<Atom>();
+	private Atom currentElement = null;
+	private Atom currentAtom = null;
 	private PackedScene atomScene;
-	private GodotAtom dragging = new GodotAtom();
+	private Atom dragging = new Atom();
 
 	private PackedScene bondScene;
 	private List<Bond> bondsList = new List<Bond>();
@@ -176,7 +175,7 @@ public partial class main : Node
 			}
 
 			// highlight hit atom
-			foreach (GodotAtom atom in atomList)
+			foreach (Atom atom in atomList)
 			{
 				if (collider == atom.atomStaticBody)
 				{
@@ -278,10 +277,10 @@ public partial class main : Node
 		}
 	}
 
-	private void AddAtom(Vector2 clickPos, GodotAtom currAtom = null)
+	private void AddAtom(Vector2 clickPos, Atom currAtom = null)
 	{
 
-		var atom = (GodotAtom)atomScene.Instantiate();
+		var atom = (Atom)atomScene.Instantiate();
 
 		atom.CopyData(currentElement);
 
@@ -311,10 +310,10 @@ public partial class main : Node
 		cursorScene._Ready();
 	}
 
-	private List<GodotAtom> LoadElementsFromJSON()
+	private List<Atom> LoadElementsFromJSON()
 	{
 
-		var elements = new List<GodotAtom>();
+		var elements = new List<Atom>();
 		string jsonText, filePath = "res://assets/periodic_table.json";
 
 		using (var file = Godot.FileAccess.Open(filePath, Godot.FileAccess.ModeFlags.Read))
@@ -345,7 +344,7 @@ public partial class main : Node
 					(int)atomColorArray[2] / 255.0f
 				);
 
-				var atom = new GodotAtom
+				var atom = new Atom
 				{
 					ElementSymbol = (string)elementData["ElementSymbol"],
 					ElementName = (string)elementData["ElementName"],
@@ -373,7 +372,7 @@ public partial class main : Node
 		hud.UpdateElementName(currentElement.ElementName);
 	}
 
-	private GodotAtom FindElementByAtomicNumber(int atomicNumber)
+	private Atom FindElementByAtomicNumber(int atomicNumber)
 	{
 		return elements.Find(element => element.AtomicNumber == atomicNumber);
 	}
@@ -399,7 +398,7 @@ public partial class main : Node
 	private void ClearScene()
 	{
 		// Remove all atoms
-		foreach (GodotAtom atom in atomList)
+		foreach (Atom atom in atomList)
 		{
 			atom.QueueFree();
 		}

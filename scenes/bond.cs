@@ -1,18 +1,15 @@
 using Godot;
 using System;
-using GodotAtom = AtomClass.GodotAtom;
+using Atom = AtomClass.atom;
 using Classes;
 
 namespace BondClass
 {
-	public partial class bond : Node3D, Bond
+	public partial class bond : Node3D
 	{
 		public StaticBody3D bondStaticBody;
 		public CollisionShape3D bondCollision;
 		public MeshInstance3D bondMesh;
-
-		public GodotAtom godotAtom1;
-		public GodotAtom godotAtom2;
 
 		public Atom Atom1 { get; set; }
 		public Atom Atom2 { get; set; }
@@ -21,8 +18,8 @@ namespace BondClass
 
 		public void UpdateBond()
 		{
-			Vector3 startPos = godotAtom2.Position;
-			Vector3 endPos = godotAtom2.Position;
+			Vector3 startPos = Atom1.Position;
+			Vector3 endPos = Atom2.Position;
 			Vector3 bondVec = endPos - startPos;
 			float length = bondVec.Length();
 
@@ -82,10 +79,6 @@ namespace BondClass
 				GD.PrintErr("Bond Mesh node not found!");
 				return;
 			}
-
-			Atom1 = godotAtom1;
-			Atom2 = godotAtom2;
-
 
 			UpdateBond();
 		}

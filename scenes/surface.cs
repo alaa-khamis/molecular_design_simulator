@@ -20,14 +20,14 @@ public partial class MolecularSurface : Node3D
         AddChild(surfaceMeshInstance);
     }
 
-    public void GenerateSurface(List<AtomClass.GodotAtom> atoms)
+    public void GenerateSurface(List<AtomClass.atom> atoms)
     {
         InitializeVoxelGrid(atoms);
         RunMarchingCubes();
         surfaceMeshInstance.Mesh = surfaceTool.Commit();
     }
 
-    private void InitializeVoxelGrid(List<AtomClass.GodotAtom> atoms)
+    private void InitializeVoxelGrid(List<AtomClass.atom> atoms)
     {
         // Determine the bounding box of all atoms
         Vector3 min = atoms[0].GlobalTransform.Origin;

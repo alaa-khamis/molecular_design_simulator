@@ -1,7 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using GodotAtom = AtomClass.GodotAtom;
+using Atom = AtomClass.atom;
 using System.Linq; 
 using System.Text;
 
@@ -20,7 +20,7 @@ public partial class hud : CanvasLayer
 		color = GetNode<ColorRect>("HUDControl/ColorRect");
 	}
 
-	public void UpdateChemicalFormula(List<GodotAtom> atoms)
+	public void UpdateChemicalFormula(List<Atom> atoms)
 	{
 		chemFormula.Clear();
 

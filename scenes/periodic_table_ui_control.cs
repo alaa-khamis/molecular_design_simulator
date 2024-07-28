@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using GodotAtom = AtomClass.GodotAtom;
+using Atom = AtomClass.atom;
 
 
 public partial class periodic_table_ui_control : Control
@@ -16,10 +16,10 @@ public partial class periodic_table_ui_control : Control
 		grid = GetNode<GridContainer>("Grid");
 		grid.Columns = 5;
 	}
-	public void Setup(List<GodotAtom> elements) {
+	public void Setup(List<Atom> elements) {
 		
 		// Setup buttons for each element
-		foreach(GodotAtom element in elements){
+		foreach(Atom element in elements){
 			Button button = new Button
 			{
 				Text = element.ElementSymbol,

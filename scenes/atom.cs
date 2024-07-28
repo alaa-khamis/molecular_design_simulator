@@ -1,10 +1,9 @@
 using Godot;
 using System;
-using Classes;
 
 namespace AtomClass
 {
-	public partial class GodotAtom : Node3D, Atom
+	public partial class atom : Node3D
 	{
 
 		// Atom attributes
@@ -107,7 +106,7 @@ namespace AtomClass
 
 		}
 
-		public void CopyData(GodotAtom currAtom){
+		public void CopyData(atom currAtom){
 			ElementSymbol = currAtom.ElementSymbol;
 			ElementName = currAtom.ElementName;
 			AtomicNumber = currAtom.AtomicNumber;
@@ -116,5 +115,5 @@ namespace AtomClass
 			VanDerWaalsRadius = currAtom.VanDerWaalsRadius;
 			atomColor = currAtom.atomColor;
 		}
-    }
+	}
 }
