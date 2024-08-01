@@ -12,13 +12,13 @@ namespace AtomClass
 		public AtomBase atomBase = new AtomBase();
 
 		// Atom scene attributes
-		public Color atomColor {get; set;}
+		public Color atomColor { get; set; }
 		public StaticBody3D atomStaticBody;
 		public CollisionShape3D atomCollision;
 		public MeshInstance3D atomMesh;
 		public StandardMaterial3D OriginalMaterial;
 		public bool highlighted = false;
-		public const float sizeNormalization  = 5.0f;
+		public const float sizeNormalization = 5.0f;
 
 		// Called when the node enters the scene tree for the first time.
 		public override void _Ready()
@@ -56,7 +56,7 @@ namespace AtomClass
 
 			var material = new StandardMaterial3D
 			{
-				AlbedoColor = atomColor,
+				AlbedoColor = new Color(atomColor.R, atomColor.G, atomColor.B)
 			};
 
 			atomMesh.MaterialOverride = material;
@@ -104,6 +104,30 @@ namespace AtomClass
 				highlighted = false;
 			}
 
+		}
+
+		public void SetPreviewMode(bool isPreview)
+		{
+			if (atomMesh == null || OriginalMaterial == null)
+			{
+				// If the mesh or material is not ready, we can't set the preview mode yet
+				return;
+			}
+
+			if (isPreview)
+			{
+				var material = new StandardMaterial3D
+				{
+					AlbedoColor = new Color(atomColor.R, atomColor.G, atomColor.B, 0.25f), // Set alpha to 0.5 for transparency
+					Transparency = BaseMaterial3D.TransparencyEnum.Alpha
+				};
+
+				atomMesh.MaterialOverride = material;
+			}
+			else
+			{
+				atomMesh.MaterialOverride = OriginalMaterial;
+			}
 		}
 	}
 }

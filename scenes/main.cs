@@ -43,6 +43,10 @@ public partial class main : Node
 	private CanvasLayer cursorScene;
 	private ErrorLabel errorLabel;
 
+	// Preview
+	private Atom previewAtom = null;
+	private Bond previewBond = null;
+
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
@@ -192,6 +196,7 @@ public partial class main : Node
 
 		}
 
+		// Removing Highlighting atom and buttons
 		else
 		{
 			if (currentAtom != null)
@@ -207,13 +212,9 @@ public partial class main : Node
 			}
 		}
 
+		// Moving atoms and molecule
 		if (dragging != null)
 		{
-			// Vector2 mousePos = GetViewport().GetMousePosition();
-			// Vector3 newPosition = camera.ProjectRayOrigin(mousePos) + camera.ProjectRayNormal(mousePos) * 2.5f;
-			// dragging.SetPosition(newPosition);
-			// UpdateBonds(dragging);
-
 			Vector2 mousePos = GetViewport().GetMousePosition();
 			Vector3 newPosition = camera.ProjectRayOrigin(mousePos) + camera.ProjectRayNormal(mousePos) * 2.5f;
 
@@ -226,6 +227,16 @@ public partial class main : Node
 				dragging.SetPosition(newPosition);
 				UpdateBonds(dragging);
 			}
+		}
+
+		// Previewing added atom
+		if (addingAtom != null)
+		{
+			UpdatePreview(GetViewport().GetMousePosition());
+		}
+		else
+		{
+			ClearPreview();
 		}
 
 	}
@@ -288,6 +299,7 @@ public partial class main : Node
 					}
 
 					addingAtom = null;
+					ClearPreview();
 				}
 			}
 		}
@@ -320,6 +332,8 @@ public partial class main : Node
 
 	private void AddAtom(Vector2 clickPos, Atom currAtom = null)
 	{
+		ClearPreview();
+
 		// Instansiate scene
 		var godotAtom = (Atom)atomScene.Instantiate();
 
@@ -493,6 +507,55 @@ public partial class main : Node
 		foreach (var bond in bondsList)
 		{
 			bond.UpdateBond();
+		}
+	}
+
+	private void UpdatePreview(Vector2 mousePos)
+	{
+		Vector3 newPosition = camera.ProjectRayOrigin(mousePos) + camera.ProjectRayNormal(mousePos) * 2.5f;
+
+		if (previewAtom == null)
+		{
+			previewAtom = (Atom)atomScene.Instantiate();
+			previewAtom.atomBase.CopyData(currentElement);
+			previewAtom.SetRadius();
+			AddChild(previewAtom);
+			previewAtom._Ready(); // Ensure the atom is properly initialized
+			previewAtom.SetPreviewMode(true);
+		}
+
+		if (previewAtom != null)
+		{
+			previewAtom.SetPosition(newPosition);
+		}
+
+		if (addingAtom != null && previewBond == null)
+		{
+			previewBond = (Bond)bondScene.Instantiate();
+			previewBond.CreateBond(addingAtom.atomBase, previewAtom.atomBase);
+			AddChild(previewBond);
+			previewBond._Ready(); // Ensure the bond is properly initialized
+			previewBond.SetPreviewMode(true);
+		}
+
+		if (previewBond != null)
+		{
+			previewBond.UpdateBond();
+		}
+	}
+
+	private void ClearPreview()
+	{
+		if (previewAtom != null)
+		{
+			previewAtom.QueueFree();
+			previewAtom = null;
+		}
+
+		if (previewBond != null)
+		{
+			previewBond.QueueFree();
+			previewBond = null;
 		}
 	}
 }
