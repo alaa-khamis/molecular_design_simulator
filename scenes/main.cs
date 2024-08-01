@@ -1,26 +1,26 @@
 using Godot;
-using Godot.Collections;
+using static Utils;
 using System.Collections.Generic;
-using System.Text.Json;
 using System;
 using Atom = AtomClass.atom;
 using Bond = BondClass.bond;
 using PTControl = periodic_table_ui_control;
 using HUD = hud;
+using Classes;
 using System.IO;
 
 public partial class main : Node
 {
 
 	// Elements
-	private List<Atom> elements;
+	private List<AtomBase> elements;
 	private PTControl ptControl;
 	private Control currentButton = null;
 
 
 	// Atoms & Bonds
 	private List<Atom> atomList = new List<Atom>();
-	private Atom currentElement = null;
+	private AtomBase currentElement = null;
 	private Atom currentAtom = null;
 	private PackedScene atomScene;
 	private Atom dragging = new Atom();
@@ -76,7 +76,7 @@ public partial class main : Node
 
 		// Get the periodic table from JSON
 		elements = LoadElementsFromJSON();
-		currentElement = elements[3];
+		currentElement = elements[1];
 
 		// HUD
 		hud = GetNode<HUD>("HUD");
@@ -279,26 +279,34 @@ public partial class main : Node
 
 	private void AddAtom(Vector2 clickPos, Atom currAtom = null)
 	{
+		// Instansiate scene
+		var godotAtom = (Atom)atomScene.Instantiate();
 
-		var atom = (Atom)atomScene.Instantiate();
+		// Copy the element data
+		godotAtom.atomBase.CopyData(currentElement);
 
-		atom.CopyData(currentElement);
+		// Setup mesh specifics
+		godotAtom.SetRadius();
 
-		AddChild(atom);
+		Vector3 atomColorVec = ConvertToGodotVector3(currentElement.AtomColor);
+		godotAtom.atomColor = new Color(atomColorVec.X, atomColorVec.Y, atomColorVec.Z);
+
+		// Add atom to tree
+		AddChild(godotAtom);
 
 		// Set sphere position
 		var from = camera.ProjectRayOrigin(clickPos);
 		var to = from + camera.ProjectRayNormal(clickPos) * 2.5f;
 
-		atom.SetPosition(to);
+		godotAtom.SetPosition(to);
 
-		atomList.Add(atom);
+		atomList.Add(godotAtom);
 
 		if (currAtom != null)
 		{
 			var bond = (Bond)bondScene.Instantiate();
-			bond.Atom1 = currAtom;
-			bond.Atom2 = atom;
+			
+			bond.CreateBond(currAtom.atomBase, godotAtom.atomBase);
 
 			bondsList.Add(bond);
 			AddChild(bond);
@@ -310,69 +318,16 @@ public partial class main : Node
 		cursorScene._Ready();
 	}
 
-	private List<Atom> LoadElementsFromJSON()
-	{
-
-		var elements = new List<Atom>();
-		string jsonText, filePath = "res://assets/periodic_table.json";
-
-		using (var file = Godot.FileAccess.Open(filePath, Godot.FileAccess.ModeFlags.Read))
-		{
-			if (file == null)
-			{
-				GD.PrintErr("Failed to open periodic_table.json");
-				return elements;
-			}
-			jsonText = file.GetAsText();
-		}
-
-		var jsonData = Json.ParseString(jsonText);
-
-		if (jsonData.VariantType != Variant.Type.Nil)
-		{
-			var rootDictionary = jsonData.AsGodotDictionary();
-			var elementsArray = rootDictionary["elements"].AsGodotArray();
-
-
-			foreach (var element in elementsArray)
-			{
-				var elementData = element.AsGodotDictionary();
-				var atomColorArray = elementData["atomColor"].AsGodotArray();
-				var atomColor = new Color(
-					(int)atomColorArray[0] / 255.0f,
-					(int)atomColorArray[1] / 255.0f,
-					(int)atomColorArray[2] / 255.0f
-				);
-
-				var atom = new Atom
-				{
-					ElementSymbol = (string)elementData["ElementSymbol"],
-					ElementName = (string)elementData["ElementName"],
-					AtomicNumber = (int)elementData["AtomicNumber"],
-					Mass = (float)elementData["Mass"],
-					CovalentRadius = (float)elementData["CovalentRadius"],
-					VanDerWaalsRadius = (float)elementData["VanDerWaalsRadius"],
-					atomColor = atomColor
-				};
-				elements.Add(atom);
-			}
-		}
-		else
-		{
-			GD.PrintErr("Failed to parse elements.json");
-		}
-
-		return elements;
-	}
-
 	private void UpdateHud()
 	{
+		Vector3 atomColorVec = ConvertToGodotVector3(currentElement.AtomColor);
+
 		hud.UpdateChemicalFormula(atomList);
-		hud.UpdateElementColor(currentElement.atomColor);
+		hud.UpdateElementColor(atomColorVec);
 		hud.UpdateElementName(currentElement.ElementName);
 	}
 
-	private Atom FindElementByAtomicNumber(int atomicNumber)
+	private AtomBase FindElementByAtomicNumber(int atomicNumber)
 	{
 		return elements.Find(element => element.AtomicNumber == atomicNumber);
 	}

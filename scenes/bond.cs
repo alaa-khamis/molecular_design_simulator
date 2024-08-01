@@ -2,6 +2,7 @@ using Godot;
 using System;
 using Atom = AtomClass.atom;
 using Classes;
+using static Utils;
 
 namespace BondClass
 {
@@ -11,15 +12,16 @@ namespace BondClass
 		public CollisionShape3D bondCollision;
 		public MeshInstance3D bondMesh;
 
-		public Atom Atom1 { get; set; }
-		public Atom Atom2 { get; set; }
-		public float BondLength { get; set; }
+		public BondBase bondBase = new BondBase();
 
+		public void CreateBond(AtomBase atom1, AtomBase atom2){
+			bondBase = new BondBase(atom1, atom2);
+		}
 
 		public void UpdateBond()
 		{
-			Vector3 startPos = Atom1.Position;
-			Vector3 endPos = Atom2.Position;
+			Vector3 startPos = ConvertToGodotVector3(bondBase.Atom1.Position);
+			Vector3 endPos = ConvertToGodotVector3(bondBase.Atom2.Position);
 			Vector3 bondVec = endPos - startPos;
 			float length = bondVec.Length();
 
@@ -79,8 +81,6 @@ namespace BondClass
 				GD.PrintErr("Bond Mesh node not found!");
 				return;
 			}
-
-			UpdateBond();
 		}
 
 		// Called every frame. 'delta' is the elapsed time since the previous frame.

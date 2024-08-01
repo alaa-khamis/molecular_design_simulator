@@ -34,13 +34,13 @@ public partial class hud : CanvasLayer
 
 		foreach (var atom in atoms)
 		{
-			if (elementCounts.ContainsKey(atom.ElementSymbol))
+			if (elementCounts.ContainsKey(atom.atomBase.ElementSymbol))
 			{
-				elementCounts[atom.ElementSymbol]++;
+				elementCounts[atom.atomBase.ElementSymbol]++;
 			}
 			else
 			{
-				elementCounts[atom.ElementSymbol] = 1;
+				elementCounts[atom.atomBase.ElementSymbol] = 1;
 			}
 		}
 
@@ -85,9 +85,9 @@ public partial class hud : CanvasLayer
 		currElement.Text = name;
 	}
 
-	public void UpdateElementColor(Color x)
+	public void UpdateElementColor(Vector3 x)
 	{
-		color.Color = x;
+		color.Color = new Color(x.X, x.Y, x.Z);
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.

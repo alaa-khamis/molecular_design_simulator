@@ -1,19 +1,15 @@
 using Godot;
 using System;
+using Classes;
+using static Utils;
 
 namespace AtomClass
 {
 	public partial class atom : Node3D
 	{
 
-		// Atom attributes
-		public float atomRadius { get; set; }
-		public string ElementSymbol { get; set; }
-		public string ElementName { get; set; }
-		public int AtomicNumber { get; set; }
-		public float Mass { get; set; }
-		public float CovalentRadius { get; set; }
-		public float VanDerWaalsRadius { get; set; }
+		// Base atom
+		public AtomBase atomBase = new AtomBase();
 
 		// Atom scene attributes
 		public Color atomColor {get; set;}
@@ -27,9 +23,6 @@ namespace AtomClass
 		// Called when the node enters the scene tree for the first time.
 		public override void _Ready()
 		{
-
-			atomRadius = VanDerWaalsRadius / sizeNormalization;
-
 			// Load atts.
 			atomStaticBody = GetNode<StaticBody3D>("AtomStaticBody");
 			if (atomStaticBody == null)
@@ -54,12 +47,12 @@ namespace AtomClass
 
 			// Set properties
 			var sphereMesh = new SphereMesh();
-			sphereMesh.Radius = atomRadius;
-			sphereMesh.Height = atomRadius * 2;
+			sphereMesh.Radius = atomBase.Radius;
+			sphereMesh.Height = atomBase.Radius * 2;
 			atomMesh.Mesh = sphereMesh;
 
 			var sphereCol = atomCollision.Shape as SphereShape3D;
-			sphereCol.Radius = atomRadius;
+			sphereCol.Radius = atomBase.Radius;
 
 			var material = new StandardMaterial3D
 			{
@@ -79,6 +72,13 @@ namespace AtomClass
 		{
 			GlobalTransform = new Transform3D(GlobalTransform.Basis, position);
 			Position = position;
+
+			atomBase.SetPosition(ConvertToNumericsVector3(position));
+		}
+
+		public void SetRadius()
+		{
+			atomBase.Radius /= sizeNormalization;
 		}
 
 		public void Highlight()
@@ -104,16 +104,6 @@ namespace AtomClass
 				highlighted = false;
 			}
 
-		}
-
-		public void CopyData(atom currAtom){
-			ElementSymbol = currAtom.ElementSymbol;
-			ElementName = currAtom.ElementName;
-			AtomicNumber = currAtom.AtomicNumber;
-			Mass = currAtom.Mass;
-			CovalentRadius = currAtom.CovalentRadius;
-			VanDerWaalsRadius = currAtom.VanDerWaalsRadius;
-			atomColor = currAtom.atomColor;
 		}
 	}
 }
