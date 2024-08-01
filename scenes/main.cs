@@ -23,7 +23,8 @@ public partial class main : Node
 	private AtomBase currentElement = null;
 	private Atom currentAtom = null;
 	private PackedScene atomScene;
-	private Atom dragging = new Atom();
+	private Atom dragging = null;
+	private Atom addingAtom = null;
 
 	private PackedScene bondScene;
 	private List<Bond> bondsList = new List<Bond>();
@@ -206,6 +207,27 @@ public partial class main : Node
 			}
 		}
 
+		if (dragging != null)
+		{
+			// Vector2 mousePos = GetViewport().GetMousePosition();
+			// Vector3 newPosition = camera.ProjectRayOrigin(mousePos) + camera.ProjectRayNormal(mousePos) * 2.5f;
+			// dragging.SetPosition(newPosition);
+			// UpdateBonds(dragging);
+
+			Vector2 mousePos = GetViewport().GetMousePosition();
+			Vector3 newPosition = camera.ProjectRayOrigin(mousePos) + camera.ProjectRayNormal(mousePos) * 2.5f;
+
+			if (Input.IsKeyPressed((Key.Shift)))
+			{
+				MoveMolecule(dragging, newPosition);
+			}
+			else
+			{
+				dragging.SetPosition(newPosition);
+				UpdateBonds(dragging);
+			}
+		}
+
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -217,7 +239,26 @@ public partial class main : Node
 	{
 		if (@event is InputEventMouseButton mouseEvent)
 		{
-			if (mouseEvent.ButtonIndex == MouseButton.Left)
+			// Handle right click for dragging atoms
+			if (mouseEvent.ButtonIndex == MouseButton.Right)
+			{
+				if (mouseEvent.Pressed)
+				{
+					if (currentAtom != null)
+					{
+						dragging = currentAtom;
+					}
+				}
+				else
+				{
+					if (dragging != null)
+					{
+						dragging = null;
+					}
+				}
+			}
+
+			else if (mouseEvent.ButtonIndex == MouseButton.Left)
 			{
 				if (mouseEvent.Pressed)
 				{
@@ -228,7 +269,7 @@ public partial class main : Node
 
 					if (currentAtom != null)
 					{
-						dragging = currentAtom;
+						addingAtom = currentAtom;
 					}
 				}
 				else
@@ -237,16 +278,16 @@ public partial class main : Node
 					{
 						AddAtom(mouseEvent.GlobalPosition);
 					}
-					else if (dragging != null)
+					else if (addingAtom != null)
 					{
-						AddAtom(mouseEvent.GlobalPosition, dragging);
+						AddAtom(mouseEvent.GlobalPosition, addingAtom);
 					}
 					else if (currentButton == null)
 					{
 						errorLabel.ShowText();
 					}
 
-					dragging = null;
+					addingAtom = null;
 				}
 			}
 		}
@@ -305,7 +346,7 @@ public partial class main : Node
 		if (currAtom != null)
 		{
 			var bond = (Bond)bondScene.Instantiate();
-			
+
 			bond.CreateBond(currAtom.atomBase, godotAtom.atomBase);
 
 			bondsList.Add(bond);
@@ -366,8 +407,9 @@ public partial class main : Node
 		}
 		bondsList.Clear();
 
-		// Reset currentAtom and dragging
+		// Reset currentAtom and addingAtom
 		currentAtom = null;
+		addingAtom = null;
 		dragging = null;
 
 		// Update the HUD and any other necessary UI elements
@@ -377,5 +419,80 @@ public partial class main : Node
 	private void GenerateMolecularSurface()
 	{
 		molecularSurface.GenerateSurface(atomList);
+	}
+
+	private void UpdateBonds(Atom movedAtom)
+	{
+		foreach (var bond in bondsList)
+		{
+			if (bond.bondBase.Atom1 == movedAtom.atomBase || bond.bondBase.Atom2 == movedAtom.atomBase)
+			{
+				bond.UpdateBond();
+			}
+		}
+	}
+
+	private void MoveMolecule(Atom rootAtom, Vector3 newPosition)
+	{
+		Vector3 delta = newPosition - rootAtom.Position;
+
+		foreach (var atom in atomList)
+		{
+			if (IsConnected(rootAtom, atom))
+			{
+				atom.SetPosition(atom.Position + delta);
+			}
+		}
+
+		UpdateAllBonds();
+	}
+
+	private bool IsConnected(Atom rootAtom, Atom targetAtom)
+	{
+		var visited = new HashSet<Atom>();
+		var stack = new Stack<Atom>();
+
+		stack.Push(rootAtom);
+
+		while (stack.Count > 0)
+		{
+			var current = stack.Pop();
+
+			if (current == targetAtom)
+			{
+				return true;
+			}
+
+			visited.Add(current);
+
+			foreach (var bond in bondsList)
+			{
+				Atom neighbor = null;
+
+				if (bond.bondBase.Atom1 == current.atomBase)
+				{
+					neighbor = atomList.Find(a => a.atomBase == bond.bondBase.Atom2);
+				}
+				else if (bond.bondBase.Atom2 == current.atomBase)
+				{
+					neighbor = atomList.Find(a => a.atomBase == bond.bondBase.Atom1);
+				}
+
+				if (neighbor != null && !visited.Contains(neighbor))
+				{
+					stack.Push(neighbor);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	private void UpdateAllBonds()
+	{
+		foreach (var bond in bondsList)
+		{
+			bond.UpdateBond();
+		}
 	}
 }
