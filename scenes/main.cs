@@ -7,7 +7,6 @@ using Bond = BondClass.bond;
 using PTControl = periodic_table_ui_control;
 using HUD = hud;
 using Classes;
-using System.IO;
 
 public partial class main : Node
 {
@@ -42,6 +41,9 @@ public partial class main : Node
 	private bool _isFullScreen = false;
 	private CanvasLayer cursorScene;
 	private ErrorLabel errorLabel;
+
+	// Spring System
+	private SpringSystem springSystem;
 
 	// Preview
 	private Atom previewAtom = null;
@@ -115,7 +117,6 @@ public partial class main : Node
 
 	public override void _PhysicsProcess(double delta)
 	{
-
 		UpdateHud();
 
 		// Update the raycast position from the camera
@@ -128,7 +129,6 @@ public partial class main : Node
 			{
 				try
 				{
-
 					SubViewport subViewport = (SubViewport)gui.GetChild(1);
 					Control control = (Control)subViewport.GetChild(0);
 					var buttons = control.GetChild(0).GetChildren();
@@ -185,20 +185,22 @@ public partial class main : Node
 				if (collider == atom.atomStaticBody)
 				{
 					// Apply hover effect
-					if (currentAtom == null)
+					if (currentAtom == null || currentAtom != atom)
 					{
+						if (currentAtom != null)
+						{
+							currentAtom.Highlight(); // Unhighlight the previous atom
+						}
 						currentAtom = atom;
-						currentAtom.Highlight();
+						currentAtom.Highlight(); // Highlight the new atom
 					}
 					break;
 				}
 			}
-
 		}
-
-		// Removing Highlighting atom and buttons
 		else
 		{
+			// Removing Highlighting atom and buttons
 			if (currentAtom != null)
 			{
 				currentAtom.Highlight();
@@ -238,7 +240,6 @@ public partial class main : Node
 		{
 			ClearPreview();
 		}
-
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -285,17 +286,16 @@ public partial class main : Node
 				}
 				else
 				{
-					if (atomList.Count == 0)
+					if (currentButton == null)
 					{
-						AddAtom(mouseEvent.GlobalPosition);
-					}
-					else if (addingAtom != null)
-					{
-						AddAtom(mouseEvent.GlobalPosition, addingAtom);
-					}
-					else if (currentButton == null)
-					{
-						errorLabel.ShowText();
+						if (atomList.Count == 0 || addingAtom != null)
+						{
+							AddAtom(mouseEvent.GlobalPosition, addingAtom);
+						}
+						else
+						{
+							errorLabel.ShowText();
+						}
 					}
 
 					addingAtom = null;
@@ -327,6 +327,11 @@ public partial class main : Node
 		if (Input.IsActionJustPressed("toggle_surface_visibility"))
 		{
 			molecularSurface.Visible = !molecularSurface.Visible;
+		}
+
+		if (Input.IsActionJustPressed("optimize"))
+		{
+			RunSpringSystemOptimization();
 		}
 	}
 
@@ -558,4 +563,42 @@ public partial class main : Node
 			previewBond = null;
 		}
 	}
+
+	private void InitializeSpringSystem()
+	{
+		List<AtomBase> atomBases = new List<AtomBase>();
+		List<BondBase> bondBases = new List<BondBase>();
+
+		foreach (var atom in atomList)
+		{
+			atomBases.Add(atom.atomBase);
+		}
+
+		foreach (var bond in bondsList)
+		{
+			bondBases.Add(bond.bondBase);
+		}
+
+		springSystem = new SpringSystem(atomBases, bondBases);
+	}
+
+	private void RunSpringSystemOptimization()
+	{
+		InitializeSpringSystem();  // Reinitialize to capture current atom positions
+		springSystem.Optimize();
+
+		// Update the Godot scene with the new positions
+		for (int i = 0; i < atomList.Count; i++)
+		{
+			atomList[i].SetPosition(ConvertToGodotVector3(springSystem.atoms[i].Position));
+		}
+
+		foreach (var bond in bondsList)
+		{
+			bond.UpdateBond();
+		}
+
+		GD.Print("Optimization completed and scene updated.");
+	}
+
 }

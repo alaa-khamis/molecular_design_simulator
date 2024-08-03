@@ -65,7 +65,7 @@ namespace Classes
 		public AtomBase Atom1 { get; set; }
 		public AtomBase Atom2 { get; set; }
 		public float BondLength { get; set; }
-		public const float RestLength = 0.0f;
+		public float RestLength = 1.0f;
 
 		public BondBase(AtomBase atom1, AtomBase atom2)
 		{
