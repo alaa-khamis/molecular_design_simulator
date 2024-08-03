@@ -124,5 +124,10 @@ namespace BondClass
 
 			bondMesh.MaterialOverride = material;
 		}
+
+		public bool ConnectsTo(AtomBase atom)
+		{
+			return bondBase.Atom1 == atom || bondBase.Atom2 == atom;
+		}
 	}
 }

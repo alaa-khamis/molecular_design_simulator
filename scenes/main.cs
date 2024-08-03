@@ -294,7 +294,7 @@ public partial class main : Node
 						}
 						else
 						{
-							errorLabel.ShowText();
+							errorLabel.ShowText("Error, Molecule already placed in scene!");
 						}
 					}
 
@@ -333,6 +333,56 @@ public partial class main : Node
 		{
 			RunSpringSystemOptimization();
 		}
+
+		if (Input.IsActionJustPressed("undo_addition"))
+		{
+			UndoAtomAddition();
+		}
+	}
+
+	private void UndoAtomAddition()
+	{
+		if (atomList.Count == 0)
+		{
+			errorLabel.ShowText("No atoms to undo!");
+			return;
+		}
+
+		// Get the last atom in the list
+		Atom lastAtom = atomList[atomList.Count - 1];
+
+		// Find and remove any bonds connected to the last atom
+		List<Bond> bondsToRemove = new List<Bond>();
+		foreach (Bond bond in bondsList)
+		{
+			if (bond.ConnectsTo(lastAtom.atomBase))
+			{
+				bondsToRemove.Add(bond);
+			}
+		}
+
+		foreach (Bond bond in bondsToRemove)
+		{
+			bond.QueueFree();
+			bondsList.Remove(bond);
+		}
+
+		// Remove the last atom
+		lastAtom.QueueFree();
+		atomList.RemoveAt(atomList.Count - 1);
+
+		// Reset currentAtom and addingAtom if they were the last atom
+		if (currentAtom == lastAtom)
+		{
+			currentAtom = null;
+		}
+		if (addingAtom == lastAtom)
+		{
+			addingAtom = null;
+		}
+
+		// Update the HUD and any other necessary UI elements
+		UpdateHud();
 	}
 
 	private void AddAtom(Vector2 clickPos, Atom currAtom = null)

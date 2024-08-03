@@ -7,8 +7,10 @@ public partial class ErrorLabel : Label
 
 	private ColorRect background;
 
-	public async void ShowText()
+	public async void ShowText(String text)
 	{
+
+		Text = text;
 
 		background.Size = new Vector2(Size.X + 20, Size.Y + 10);
 		background.Position = new Vector2(Position.X - 10, Position.Y - 5);

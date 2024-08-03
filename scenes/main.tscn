@@ -29,7 +29,6 @@ offset_right = 192.0
 offset_bottom = -13.0
 grow_horizontal = 2
 grow_vertical = 0
-text = "Error, Molecule already placed in scene!"
 horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("5_tfq5n")
