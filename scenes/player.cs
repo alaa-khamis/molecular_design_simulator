@@ -44,6 +44,12 @@ public partial class player : CharacterBody3D
 
 	public override void _Input(InputEvent @event)
 	{
+
+		// Block movement if saving file
+		if (main.overlay != null && main.overlay.Visible){
+			return;
+		}
+
 		if (@event is InputEventMouseMotion)
 		{
 			if (head != null && cam != null)
@@ -65,6 +71,13 @@ public partial class player : CharacterBody3D
 
 	public override void _PhysicsProcess(double delta)
 	{
+
+		// Block movement if saving file
+		if (main.overlay != null && main.overlay.Visible){
+			return;
+		}
+
+		
 		Vector3 velocity = Velocity;
 
 		// Add the gravity.

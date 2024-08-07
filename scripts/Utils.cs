@@ -70,5 +70,21 @@ public class Utils
 
 		return elements;
 	}
+
+	public static string GetCurrentDirectory()
+	{
+		// Get the absolute path to the executable
+		string executablePath = OS.GetExecutablePath();
+
+		// Get the directory of the executable
+		string executableDir = System.IO.Path.GetDirectoryName(executablePath);
+
+		// Convert to a relative path (from project root)
+		string projectPath = ProjectSettings.GlobalizePath("res://");
+		string relativePath = executableDir.Replace(projectPath, "");
+
+		// Return the relative path
+		return relativePath;
+	}
 }
 

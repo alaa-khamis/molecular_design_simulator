@@ -7,6 +7,7 @@ using Bond = BondClass.bond;
 using PTControl = periodic_table_ui_control;
 using HUD = hud;
 using Classes;
+using System.IO;
 
 public partial class main : Node
 {
@@ -41,6 +42,8 @@ public partial class main : Node
 	private bool _isFullScreen = false;
 	private CanvasLayer cursorScene;
 	private ErrorLabel errorLabel;
+	private FileDialog saveFileDialog;
+	public static Control overlay;
 
 	// Spring System
 	private SpringSystem springSystem;
@@ -97,6 +100,20 @@ public partial class main : Node
 		molecularSurface = new MolecularSurface();
 		AddChild(molecularSurface);
 		GD.Print($"Added MolecularSurface to main at position {molecularSurface.GlobalPosition}");
+
+		// Save File Dialog
+		saveFileDialog = GetNode<FileDialog>("SaveFileDialog");
+		saveFileDialog.Connect("file_selected", Callable.From<string>(OnFileSelected));
+		saveFileDialog.Connect("canceled", Callable.From(OnCancel));
+		saveFileDialog.Filters = new string[] { "*.txt" };
+
+		// Current Directory
+		string currentDir = GetCurrentDirectory();
+		saveFileDialog.RootSubfolder = currentDir;
+
+		// Overlay
+		overlay = GetNode<Control>("DisableOverlay");
+		overlay.Visible = false;
 	}
 
 	// Method to change the resolution
@@ -337,6 +354,11 @@ public partial class main : Node
 		if (Input.IsActionJustPressed("undo_addition"))
 		{
 			UndoAtomAddition();
+		}
+
+		if (Input.IsActionJustPressed("save_molecule"))
+		{
+			SaveMoleculeZMatrix();
 		}
 	}
 
@@ -649,6 +671,34 @@ public partial class main : Node
 		}
 
 		GD.Print("Optimization completed and scene updated.");
+	}
+
+	private void SaveMoleculeZMatrix()
+	{
+		Input.MouseMode = Input.MouseModeEnum.Visible;
+		saveFileDialog.Visible = true;
+		overlay.Visible = true;
+	}
+
+	private void OnFileSelected(string path)
+	{
+
+		if (!path.EndsWith(".txt"))
+		{
+			path += ".txt"; // Default extension
+		}
+
+		string zMatrix = MoleculeUtils.ConvertToZMatrix(atomList.ConvertAll(a => a.atomBase), bondsList.ConvertAll(b => b.bondBase));
+		MoleculeUtils.SaveZMatrixToFile(zMatrix, path);
+		GD.Print($"Molecule successfully saved to {path}");
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+		overlay.Visible = false;
+	}
+
+	private void OnCancel()
+	{
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+		overlay.Visible = false;
 	}
 
 }
