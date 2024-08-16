@@ -66,10 +66,10 @@ public static class ZMatrixUtils
 		}
 		else if (atomIndex == 1)
 		{
-			// Second atom: Bond length from the first atom
+			// Second atom: Bond length from the first atom along the Y-axis
 			int bondAtomIndex = int.Parse(tokens[1]) - 1;
 			float bondLength = float.Parse(tokens[2]);
-			return positions[bondAtomIndex] + new Vector3(bondLength, 0, 0);
+			return positions[bondAtomIndex] + new Vector3(0, bondLength, 0); // Moving along Y-axis instead of X-axis
 		}
 		else if (atomIndex == 2)
 		{
@@ -80,10 +80,10 @@ public static class ZMatrixUtils
 			float angle = float.Parse(tokens[4]);
 
 			Vector3 bondDir = Vector3.Normalize(positions[bondAtomIndex] - positions[angleAtomIndex]);
-			Vector3 perpendicularDir = Vector3.Cross(bondDir, Vector3.UnitY);
+			Vector3 perpendicularDir = Vector3.Cross(bondDir, Vector3.UnitX); // Change perpendicular direction to X-axis
 			if (perpendicularDir == Vector3.Zero)
 			{
-				perpendicularDir = Vector3.Cross(bondDir, Vector3.UnitX);
+				perpendicularDir = Vector3.Cross(bondDir, Vector3.UnitY); // Use Y-axis if X-axis fails
 			}
 			return positions[bondAtomIndex] + bondLength * (float)Math.Cos(DegToRad(angle)) * bondDir + bondLength * (float)Math.Sin(DegToRad(angle)) * perpendicularDir;
 		}
@@ -107,17 +107,13 @@ public static class ZMatrixUtils
 		}
 	}
 
+
 	private static float DegToRad(float deg)
 	{
 		return (float)(deg * Math.PI / 180.0f);
 	}
 
 	// Calculate Z-Matrix
-
-	// public static string ConvertToZMatrix(List<AtomBase> atoms, List<BondBase> bonds)
-	// {
-	// 	//TODO: Implementation
-	// }
 
 	public static string ConvertToZMatrix(List<AtomBase> atoms, List<BondBase> bonds)
 	{

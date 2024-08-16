@@ -46,6 +46,11 @@ layout_mode = 2
 text = "'F' - Toggle Fullscreen "
 label_settings = SubResource("LabelSettings_aa3t1")
 
+[node name="TabMenu2" type="Label" parent="PanelContainer/VBoxContainer"]
+layout_mode = 2
+text = "'MouseRight' - Move Atom, 'Shift+Right' - Move Molecule"
+label_settings = SubResource("LabelSettings_aa3t1")
+
 [node name="Movement" type="Label" parent="PanelContainer/VBoxContainer"]
 layout_mode = 2
 text = "'W A S D' - Movement"
