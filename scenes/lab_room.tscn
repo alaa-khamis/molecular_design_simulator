@@ -1,11 +1,11 @@
-[gd_scene load_steps=23 format=3 uid="uid://dwopei0e0w3ib"]
+[gd_scene load_steps=20 format=3 uid="uid://dwopei0e0w3ib"]
 
-[ext_resource type="Texture2D" uid="uid://dl01s686m1gee" path="res://assets/textures/floor/laminate_floor_02_diff_4k.png" id="1_ft4rg"]
-[ext_resource type="Texture2D" uid="uid://caljqv2mm6lbr" path="res://assets/textures/floor/laminate_floor_02_nor_gl_4k.png" id="2_8kavq"]
-[ext_resource type="Texture2D" uid="uid://bn0x7r84rvbgs" path="res://assets/textures/floor/laminate_floor_02_rough_4k.png" id="3_sxo6n"]
-[ext_resource type="Texture2D" uid="uid://dycfrfcucqyhc" path="res://assets/textures/wall/painted_plaster_wall_diff_4k.png" id="4_y7fte"]
-[ext_resource type="Texture2D" uid="uid://dbdugivyehn3l" path="res://assets/textures/wall/painted_plaster_wall_nor_gl_4k.png" id="5_t3pua"]
-[ext_resource type="Texture2D" uid="uid://u7noguotfw35" path="res://assets/textures/wall/painted_plaster_wall_rough_4k.png" id="6_thxef"]
+[ext_resource type="Texture2D" uid="uid://18jgmduturjt" path="res://assets/textures/floor/laminate_floor_02_diff_1k.png" id="1_lvxv0"]
+[ext_resource type="Texture2D" uid="uid://byqrowj061ddl" path="res://assets/textures/floor/laminate_floor_02_nor_gl_1k.png" id="2_darsh"]
+[ext_resource type="Texture2D" uid="uid://u2t5yvx6lncs" path="res://assets/textures/floor/laminate_floor_02_rough_1k.png" id="3_qdt7q"]
+[ext_resource type="Texture2D" uid="uid://c3o2hw4l6frvw" path="res://assets/textures/wall/plastered_wall_02_diff_1k.png" id="4_mdjej"]
+[ext_resource type="Texture2D" uid="uid://c7jd8i5esvv2m" path="res://assets/textures/wall/plastered_wall_02_nor_gl_1k.png" id="5_ex00w"]
+[ext_resource type="Texture2D" uid="uid://chugub2afjo4h" path="res://assets/textures/wall/plastered_wall_02_rough_1k.png" id="6_6d7in"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_5jtd2"]
 size = Vector3(40, 2, 40)
@@ -15,11 +15,11 @@ size = Vector3(40, 2, 40)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1cbwh"]
 diffuse_mode = 1
-albedo_texture = ExtResource("1_ft4rg")
+albedo_texture = ExtResource("1_lvxv0")
 metallic_specular = 0.17
-roughness_texture = ExtResource("3_sxo6n")
+roughness_texture = ExtResource("3_qdt7q")
 normal_enabled = true
-normal_texture = ExtResource("2_8kavq")
+normal_texture = ExtResource("2_darsh")
 uv1_scale = Vector3(15, 15, 15)
 uv1_offset = Vector3(2, 1, 3)
 
@@ -29,11 +29,11 @@ size = Vector3(20, 2, 40)
 [sub_resource type="BoxMesh" id="BoxMesh_8usb5"]
 size = Vector3(20, 2, 40)
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v4v8g"]
-albedo_texture = ExtResource("4_y7fte")
-roughness_texture = ExtResource("6_thxef")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_o8eob"]
+albedo_texture = ExtResource("4_mdjej")
+roughness_texture = ExtResource("6_6d7in")
 normal_enabled = true
-normal_texture = ExtResource("5_t3pua")
+normal_texture = ExtResource("5_ex00w")
 uv1_scale = Vector3(3, 3, 3)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_rvjkh"]
@@ -41,28 +41,6 @@ size = Vector3(20, 2, 40)
 
 [sub_resource type="BoxMesh" id="BoxMesh_1bxmr"]
 size = Vector3(20, 2, 40)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vyixj"]
-albedo_texture = ExtResource("4_y7fte")
-roughness_texture = ExtResource("6_thxef")
-normal_enabled = true
-normal_texture = ExtResource("5_t3pua")
-uv1_scale = Vector3(3, 3, 3)
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mc30q"]
-albedo_texture = ExtResource("4_y7fte")
-roughness_texture = ExtResource("6_thxef")
-normal_enabled = true
-normal_texture = ExtResource("5_t3pua")
-uv1_scale = Vector3(4, 4, 4)
-uv1_triplanar_sharpness = 8.28212
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qm1wp"]
-albedo_texture = ExtResource("4_y7fte")
-roughness_texture = ExtResource("6_thxef")
-normal_enabled = true
-normal_texture = ExtResource("5_t3pua")
-uv1_scale = Vector3(2, 2, 2)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_ltwq5"]
 size = Vector3(40, 2, 40)
@@ -104,7 +82,7 @@ shape = SubResource("BoxShape3D_20ymu")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall1"]
 mesh = SubResource("BoxMesh_8usb5")
-surface_material_override/0 = SubResource("StandardMaterial3D_v4v8g")
+surface_material_override/0 = SubResource("StandardMaterial3D_o8eob")
 
 [node name="Wall2" type="StaticBody3D" parent="."]
 transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, -20, 10, 0)
@@ -114,7 +92,7 @@ shape = SubResource("BoxShape3D_rvjkh")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall2"]
 mesh = SubResource("BoxMesh_1bxmr")
-surface_material_override/0 = SubResource("StandardMaterial3D_vyixj")
+surface_material_override/0 = SubResource("StandardMaterial3D_o8eob")
 
 [node name="Wall3" type="StaticBody3D" parent="."]
 transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 10, 20)
@@ -124,7 +102,7 @@ shape = SubResource("BoxShape3D_rvjkh")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall3"]
 mesh = SubResource("BoxMesh_1bxmr")
-surface_material_override/0 = SubResource("StandardMaterial3D_mc30q")
+surface_material_override/0 = SubResource("StandardMaterial3D_o8eob")
 
 [node name="Wall4" type="StaticBody3D" parent="."]
 transform = Transform3D(1.91069e-15, 4.37114e-08, 1, 1, -4.37114e-08, 0, 4.37114e-08, 1, -4.37114e-08, 0, 10, -20)
@@ -134,7 +112,7 @@ shape = SubResource("BoxShape3D_rvjkh")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="Wall4"]
 mesh = SubResource("BoxMesh_1bxmr")
-surface_material_override/0 = SubResource("StandardMaterial3D_qm1wp")
+surface_material_override/0 = SubResource("StandardMaterial3D_o8eob")
 
 [node name="Ceiling" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 20, 0)
