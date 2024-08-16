@@ -1,5 +1,6 @@
 using Godot;
 using static Utils;
+using static ZMatrixUtils;
 using System.Collections.Generic;
 using System;
 using Atom = AtomClass.atom;
@@ -43,6 +44,8 @@ public partial class main : Node
 	private CanvasLayer cursorScene;
 	private ErrorLabel errorLabel;
 	private FileDialog saveFileDialog;
+	private FileDialog uploadFileDialog;
+	private bool uploading = false;
 	public static Control overlay;
 
 	// Spring System
@@ -103,9 +106,14 @@ public partial class main : Node
 
 		// Save File Dialog
 		saveFileDialog = GetNode<FileDialog>("SaveFileDialog");
-		saveFileDialog.Connect("file_selected", Callable.From<string>(OnFileSelected));
+		saveFileDialog.Connect("file_selected", Callable.From<string>(OnSaveFileSelected));
 		saveFileDialog.Connect("canceled", Callable.From(OnCancel));
 		saveFileDialog.Filters = new string[] { "*.txt" };
+
+		uploadFileDialog = GetNode<FileDialog>("UploadFileDialog");
+		uploadFileDialog.Connect("file_selected", Callable.From<string>(OnUploadFileSelected));
+		uploadFileDialog.Connect("canceled", Callable.From(OnCancel));
+		uploadFileDialog.Filters = new string[] { "*.txt" };
 
 		// Current Directory
 		string currentDir = GetCurrentDirectory();
@@ -305,7 +313,7 @@ public partial class main : Node
 				{
 					if (currentButton == null)
 					{
-						if (atomList.Count == 0 || addingAtom != null)
+						if (atomList.Count == 0 || addingAtom != null || uploading)
 						{
 							AddAtom(mouseEvent.GlobalPosition, addingAtom);
 						}
@@ -338,7 +346,7 @@ public partial class main : Node
 
 		if (Input.IsActionJustPressed("generate_surface"))
 		{
-			GenerateMolecularSurface();
+			// GenerateMolecularSurface();
 		}
 
 		if (Input.IsActionJustPressed("toggle_surface_visibility"))
@@ -358,7 +366,18 @@ public partial class main : Node
 
 		if (Input.IsActionJustPressed("save_molecule"))
 		{
-			SaveMoleculeZMatrix();
+			if (atomList.Count == 0)
+				errorLabel.ShowText("Error, Can't save empty scene!");
+			else
+				ShowFileDialog(saveFileDialog);
+		}
+
+		if (Input.IsActionJustPressed("upload_molecule"))
+		{
+			if (atomList.Count != 0)
+				errorLabel.ShowText("Error, Can't load molecule. Scene isn't empty!");
+			else
+				ShowFileDialog(uploadFileDialog);
 		}
 	}
 
@@ -673,14 +692,14 @@ public partial class main : Node
 		GD.Print("Optimization completed and scene updated.");
 	}
 
-	private void SaveMoleculeZMatrix()
+	private void ShowFileDialog(FileDialog dialog)
 	{
 		Input.MouseMode = Input.MouseModeEnum.Visible;
-		saveFileDialog.Visible = true;
+		dialog.Visible = true;
 		overlay.Visible = true;
 	}
 
-	private void OnFileSelected(string path)
+	private void OnSaveFileSelected(string path)
 	{
 
 		if (!path.EndsWith(".txt"))
@@ -688,8 +707,8 @@ public partial class main : Node
 			path += ".txt"; // Default extension
 		}
 
-		string zMatrix = MoleculeUtils.ConvertToZMatrix(atomList.ConvertAll(a => a.atomBase), bondsList.ConvertAll(b => b.bondBase));
-		MoleculeUtils.SaveZMatrixToFile(zMatrix, path);
+		string zMatrix = ConvertToZMatrix(atomList.ConvertAll(a => a.atomBase), bondsList.ConvertAll(b => b.bondBase));
+		SaveZMatrixToFile(zMatrix, path);
 		GD.Print($"Molecule successfully saved to {path}");
 		Input.MouseMode = Input.MouseModeEnum.Captured;
 		overlay.Visible = false;
@@ -698,7 +717,95 @@ public partial class main : Node
 	private void OnCancel()
 	{
 		Input.MouseMode = Input.MouseModeEnum.Captured;
+		saveFileDialog.Visible = false;
+		uploadFileDialog.Visible = false;
 		overlay.Visible = false;
 	}
 
+	private void UploadMoleculeZMatrix(string filePath)
+	{
+		string zMatrix = File.ReadAllText(filePath);
+
+		CreateMoleculeFromZMatrix(zMatrix);
+		uploading = false;
+	}
+
+	private void CreateMoleculeFromZMatrix(string zMatrix)
+	{
+		// Parse the Z-matrix to get atom and bond data
+		var bases = ParseZMatrix(zMatrix);
+		var atomBases = bases.Item1;
+		var bondBases = bases.Item2;
+
+
+		// Calculate the position where the first atom should be placed
+		Vector3 rayOrigin = camera.GlobalTransform.Origin;
+		Vector3 rayDirection = -camera.GlobalTransform.Basis.Z;
+		float placementDistance = 2.5f;
+
+		// Calculate the target position for the first atom
+		Vector3 targetPosition = rayOrigin + rayDirection * placementDistance;
+
+		// Original position of the first atom from the Z-matrix
+		Vector3 firstAtomOriginalPosition = ConvertToGodotVector3(atomBases[0].Position);
+
+		// Calculate the offset needed to move the first atom to the target position
+		Vector3 offset = targetPosition - firstAtomOriginalPosition;
+
+		// Dictionary to map AtomBase to the instantiated Atom nodes
+		Dictionary<AtomBase, Atom> atomBaseToGodotAtom = new Dictionary<AtomBase, Atom>();
+
+		// Create atoms and add them to the scene
+		for (int i = 0; i < atomBases.Count; i++)
+		{
+			var atomBase = atomBases[i];
+			var godotAtom = (Atom)atomScene.Instantiate();
+
+			// Adjust the position by the calculated offset
+			Vector3 adjustedPosition = ConvertToGodotVector3(atomBase.Position) + offset;
+
+			godotAtom.atomBase.CopyData(atomBase);
+			godotAtom.SetRadius();
+			godotAtom.atomColor = new Color(atomBase.AtomColor.X, atomBase.AtomColor.Y, atomBase.AtomColor.Z);
+
+			// Add the atom to the scene tree and the atom list
+			AddChild(godotAtom);
+			godotAtom.SetPosition(adjustedPosition);
+			atomList.Add(godotAtom);
+
+			// Map the atomBase to the instantiated Godot atom
+			atomBaseToGodotAtom[atomBase] = godotAtom;
+		}
+
+		// Create bonds and add them to the scene
+		foreach (var bondBase in bondBases)
+		{
+			var godotBond = (Bond)bondScene.Instantiate();
+
+			// Get the Godot atoms corresponding to the bond's atom bases
+			Atom atom1 = atomBaseToGodotAtom[bondBase.Atom1];
+			Atom atom2 = atomBaseToGodotAtom[bondBase.Atom2];
+
+			// Create the bond between the two atoms
+			godotBond.CreateBond(atom1.atomBase, atom2.atomBase);
+
+			// Add the bond to the scene tree and the bond list
+			AddChild(godotBond);
+			bondsList.Add(godotBond);
+
+			// Update the bond to ensure it reflects the new positions of the atoms
+			godotBond.UpdateBond();
+		}
+
+		// Update the HUD to reflect the new molecule
+		UpdateHud();
+	}
+
+	private void OnUploadFileSelected(string path)
+	{
+		UploadMoleculeZMatrix(path);
+		GD.Print($"Molecule successfully uploaded to {path}");
+		Input.MouseMode = Input.MouseModeEnum.Captured;
+		overlay.Visible = false;
+	}
 }

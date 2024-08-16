@@ -26,7 +26,7 @@ class SpringSystem
 			Vector3 direction = pos1 - pos2;
 			float currentLength = direction.Length();
 			Vector3 normalizedDirection = Vector3.Normalize(direction);
-			float restLength = bond.RestLength;
+			float restLength = BondBase.RestLength;
 			Vector3 grad = (currentLength - restLength) * normalizedDirection;
 
 			gradients[atoms.IndexOf(bond.Atom1)] += grad;
@@ -45,7 +45,7 @@ class SpringSystem
 			Vector3 pos1 = bond.Atom1.Position;
 			Vector3 pos2 = bond.Atom2.Position;
 			float currentLength = (pos1 - pos2).Length();
-			float restLength = bond.RestLength;
+			float restLength = BondBase.RestLength;
 			energy += 0.5f * (currentLength - restLength) * (currentLength - restLength);
 		}
 		return energy;

@@ -65,7 +65,7 @@ namespace Classes
 		public AtomBase Atom1 { get; set; }
 		public AtomBase Atom2 { get; set; }
 		public float BondLength { get; set; }
-		public float RestLength = 1.0f;
+		public static float RestLength = 1.0f;
 
 		public BondBase(AtomBase atom1, AtomBase atom2)
 		{
@@ -73,7 +73,7 @@ namespace Classes
 			Atom2 = atom2;
 
 			Vector3 startPos = Atom1.Position;
-			Vector3 endPos = Atom1.Position;
+			Vector3 endPos = Atom2.Position;
 			Vector3 bondVec = endPos - startPos;
 			float length = bondVec.Length();
 
