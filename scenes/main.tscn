@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cduw4ls6uqsmo"]
+[gd_scene load_steps=11 format=3 uid="uid://cduw4ls6uqsmo"]
 
 [ext_resource type="Script" path="res://scenes/main.cs" id="1_6b63c"]
 [ext_resource type="PackedScene" uid="uid://dwopei0e0w3ib" path="res://scenes/lab_room.tscn" id="1_ytqs7"]
@@ -7,6 +7,12 @@
 [ext_resource type="Script" path="res://scenes/ErrorLabel.cs" id="5_tfq5n"]
 [ext_resource type="PackedScene" uid="uid://bhvs2sqpagpo3" path="res://scenes/hud.tscn" id="6_3wx3h"]
 [ext_resource type="PackedScene" uid="uid://b06ngn5ocwjpd" path="res://scenes/periodic_table_ui.tscn" id="7_buh27"]
+[ext_resource type="PackedScene" uid="uid://bvm734n52qy44" path="res://scenes/controls_menu.tscn" id="8_fiv5h"]
+[ext_resource type="Shader" path="res://assets/shaders/blur.gdshader" id="8_k8lct"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r3nqm"]
+shader = ExtResource("8_k8lct")
+shader_parameter/brightness = 0.616
 
 [node name="Main" type="Node"]
 script = ExtResource("1_6b63c")
@@ -33,24 +39,23 @@ horizontal_alignment = 1
 vertical_alignment = 1
 script = ExtResource("5_tfq5n")
 
-[node name="HUD" parent="." instance=ExtResource("6_3wx3h")]
-
 [node name="PeriodicTableUI" parent="." instance=ExtResource("7_buh27")]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -10.1159, 4.47061, 0)
 
-[node name="SaveFileDialog" type="FileDialog" parent="."]
-title = "Save Z Matrix"
-initial_position = 2
-size = Vector2i(500, 400)
-ok_button_text = "Save"
-dialog_close_on_escape = false
-access = 2
+[node name="HUD" parent="." instance=ExtResource("6_3wx3h")]
+layer = -1
 
-[node name="DisableOverlay" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="DisableOverlay" type="ColorRect" parent="."]
+visible = false
+material = SubResource("ShaderMaterial_r3nqm")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TabMenu" parent="." instance=ExtResource("8_fiv5h")]
+visible = false
 
 [node name="UploadFileDialog" type="FileDialog" parent="."]
 title = "Open a File"
@@ -58,4 +63,12 @@ initial_position = 2
 size = Vector2i(500, 400)
 ok_button_text = "Open"
 file_mode = 0
+access = 2
+
+[node name="SaveFileDialog" type="FileDialog" parent="."]
+title = "Save Z Matrix"
+initial_position = 2
+size = Vector2i(500, 400)
+ok_button_text = "Save"
+dialog_close_on_escape = false
 access = 2

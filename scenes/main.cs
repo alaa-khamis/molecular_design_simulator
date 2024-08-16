@@ -30,7 +30,6 @@ public partial class main : Node
 	private PackedScene bondScene;
 	private List<Bond> bondsList = new List<Bond>();
 
-	private MolecularSurface molecularSurface;
 
 	// Player attributes
 	private Camera3D camera;
@@ -46,7 +45,8 @@ public partial class main : Node
 	private FileDialog saveFileDialog;
 	private FileDialog uploadFileDialog;
 	private bool uploading = false;
-	public static Control overlay;
+	public static ColorRect overlay;
+	public static Control TabMenu;
 
 	// Spring System
 	private SpringSystem springSystem;
@@ -99,11 +99,6 @@ public partial class main : Node
 		ptControl = GetNode<PTControl>("PeriodicTableUI/SubViewport/Control");
 		ptControl.Setup(elements);
 
-		// Add surface
-		molecularSurface = new MolecularSurface();
-		AddChild(molecularSurface);
-		GD.Print($"Added MolecularSurface to main at position {molecularSurface.GlobalPosition}");
-
 		// Save File Dialog
 		saveFileDialog = GetNode<FileDialog>("SaveFileDialog");
 		saveFileDialog.Connect("file_selected", Callable.From<string>(OnSaveFileSelected));
@@ -120,8 +115,11 @@ public partial class main : Node
 		saveFileDialog.RootSubfolder = currentDir;
 
 		// Overlay
-		overlay = GetNode<Control>("DisableOverlay");
-		overlay.Visible = false;
+		overlay = GetNode<ColorRect>("DisableOverlay");
+
+		// Controls Meny
+		TabMenu = GetNode<Control>("TabMenu");
+		errorLabel.ShowText("Click 'Tab' to show controls!");
 	}
 
 	// Method to change the resolution
@@ -344,16 +342,6 @@ public partial class main : Node
 			ClearScene();
 		}
 
-		if (Input.IsActionJustPressed("generate_surface"))
-		{
-			// GenerateMolecularSurface();
-		}
-
-		if (Input.IsActionJustPressed("toggle_surface_visibility"))
-		{
-			molecularSurface.Visible = !molecularSurface.Visible;
-		}
-
 		if (Input.IsActionJustPressed("optimize"))
 		{
 			RunSpringSystemOptimization();
@@ -379,7 +367,21 @@ public partial class main : Node
 			else
 				ShowFileDialog(uploadFileDialog);
 		}
+
+		if (Input.IsActionJustPressed("tab_menu"))
+		{
+			ToggleTabMenu();
+		}
 	}
+
+	private void ToggleTabMenu()
+	{
+		TabMenu.Visible = !TabMenu.Visible;
+		overlay.Visible = !overlay.Visible;
+
+		Input.MouseMode = TabMenu.Visible ? Input.MouseModeEnum.Visible : Input.MouseModeEnum.Captured;
+	}
+
 
 	private void UndoAtomAddition()
 	{
@@ -525,12 +527,7 @@ public partial class main : Node
 		// Update the HUD and any other necessary UI elements
 		UpdateHud();
 	}
-
-	private void GenerateMolecularSurface()
-	{
-		molecularSurface.GenerateSurface(atomList);
-	}
-
+	
 	private void UpdateBonds(Atom movedAtom)
 	{
 		foreach (var bond in bondsList)
