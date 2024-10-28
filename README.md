@@ -1,6 +1,8 @@
 
 # Molecular Design Simulator
 
+This project was done under the supervision of Prof. Roi Poranne, as part of the requirements for a MSc in Computer Science at the University of Haifa
+
 ## Overview
 
 This project is a **Molecular Design Simulator** developed using **Godot 4** and **C#**. The application allows users to design molecular structures by dynamically placing atoms within a 3D environment and generating bonds between them. It also features a spring system optimization to minimize the molecular geometry, ensuring realistic and stable configurations.
